@@ -34,16 +34,16 @@ class DoublyLinkedList:
 
 def build_sll_from_list(values: list[int]) -> SinglyLinkedList:
     sll = SinglyLinkedList()
-    
-    if not values:
-        return sll
 
-    sll.head = SLLNode(values[0])
-    current = sll.head
-
-    for val in values[1:]:
-        current.next = SLLNode(val)
-        current = current.next
+    current = None
+    for val in values:
+        node = SLLNode(val)
+        if sll.head is None:
+            sll.head = node
+            current = node
+        else:
+            current.next = node
+            current = node
 
     return sll
 
@@ -79,13 +79,13 @@ def remove_all_from_dll(dll: DoublyLinkedList, target: int) -> None:
         next_node = current.next
 
         if current.value == target:
-            # Update previous node
+            # Fix previous pointer
             if current.prev:
                 current.prev.next = current.next
             else:
                 dll.head = current.next
 
-            # Update next node
+            # Fix next pointer
             if current.next:
                 current.next.prev = current.prev
             else:
@@ -98,9 +98,14 @@ def is_train_palindrome(dll: DoublyLinkedList) -> bool:
     left = dll.head
     right = dll.tail
 
-    while left and right and left != right and left.prev != right:
+    while left and right:
         if left.value != right.value:
             return False
+
+        # Stop when pointers meet or cross
+        if left == right or left.next == right:
+            break
+
         left = left.next
         right = right.prev
 
